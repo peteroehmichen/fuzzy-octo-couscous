@@ -1,34 +1,37 @@
-import "./App.css";
 import Users from "./Users";
 import { useState } from "react";
 import InnerFrame from "./InnerFrame";
 import Edit from "./Edit";
-import Summary from "./Summary";
+import Monthly from "./Monthly";
+import Daily from "./Daily";
 
 function App() {
     const [name, setName] = useState("");
 
     const withUserNavigation = (
-        <div>
-            Current User: {name}{" "}
+        <div className="inner-header">
+            <div>
+                <b>Aktiver Nutzer: {name}</b>
+            </div>
             <div
                 onClick={() => {
                     setName(false);
                 }}
             >
-                Change User
+                ❌
             </div>
         </div>
     );
 
     return (
-        <div>
+        <div className="App">
             {!name && <Users selectName={setName} />}
             {name && withUserNavigation}
             {name && (
                 <InnerFrame>
-                    <Summary label="view Statistics" user={name} />
-                    <Edit label="edit / new" user={name} />
+                    <Edit label="Zeiten hinzufügen / bearbeiten" user={name} />
+                    <Daily label="Arbeitszeiten pro Tag" user={name} />
+                    <Monthly label="Arbeitszeiten pro Monat" user={name} />
                 </InnerFrame>
             )}
         </div>

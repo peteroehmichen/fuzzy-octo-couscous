@@ -7,15 +7,13 @@ export default function InnerFrame(props) {
     };
 
     return (
-        <div className="auth-nav-frame">
-            <div className="tab-list">
+        <div className="frame">
+            <div className="tabs">
                 {props.children.map((tab, i) => {
                     return (
                         <div
-                            className={`tab-list-item ${
-                                activeTab === tab.props.label
-                                    ? "tab-list-active"
-                                    : ""
+                            className={`tab ${
+                                activeTab === tab.props.label ? "active" : ""
                             }`}
                             key={i}
                             onClick={SelectActiveTab}

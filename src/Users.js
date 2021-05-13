@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 export default function Users(props) {
     const [allUsers, setAllUsers] = useState([]);
@@ -28,20 +28,22 @@ export default function Users(props) {
     }
 
     return (
-        <div>
-            <div>
-                <h2>Zeiterfassung</h2>
-                <h4>please select your user</h4>
+        <Fragment>
+            <div className="title">
+                <h1>Zeiterfassung</h1>
+                <h3>Bitte wähle einen Nutzer</h3>
             </div>
-            <div>
+            <div className="user-body">
+                <p>Bestehende Nutzer</p>
                 <select
+                    id="existing"
                     defaultValue="choose"
                     onChange={(e) => {
                         setName(e.target.value);
                     }}
                 >
                     <option disabled value="choose">
-                        choose the User
+                        Bitte auswählen...
                     </option>
                     {allUsers &&
                         allUsers.map((user, i) => {
@@ -52,19 +54,17 @@ export default function Users(props) {
                             );
                         })}
                 </select>
-                <p>or create a new User</p>
+                <p>oder erstelle einen neuen Nutzer</p>
                 <input
                     type="text"
                     name="newUser"
-                    placeholder="enter a new name"
+                    placeholder="Dein Name"
                     onChange={(e) => {
                         setName(e.target.value);
                     }}
                 />
-                <div onClick={confirmName}>Submit</div>
+                <button onClick={confirmName}>Submit</button>
             </div>
-        </div>
+        </Fragment>
     );
 }
-
-// TODO (0) Select User and maybe create a new user

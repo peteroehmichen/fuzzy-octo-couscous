@@ -1,5 +1,5 @@
 import { Fragment, useEffect, useState } from "react";
-import { format, formatISO } from "date-fns";
+import { format } from "date-fns";
 
 export default function Edit(props) {
     const [logs, setLogs] = useState();
@@ -61,25 +61,35 @@ export default function Edit(props) {
         setLogs(newLogs);
     }
 
-    const startButton = <div onClick={logStart}>START a new log</div>;
-    const endButton = <div onClick={logEnd}>End current log</div>;
+    const startButton = (
+        <button className="start-stop" onClick={logStart}>
+            <p>🟢</p>
+            <h3>Starte eine neue Zeiterfassung</h3>
+        </button>
+    );
+    const endButton = (
+        <button className="start-stop" onClick={logEnd}>
+            <p>🛑</p>
+            <h3>Beende die aktuelle Zeiterfassung</h3>
+        </button>
+    );
 
     return (
-        <div>
+        <div className="sections">
             <div>
-                <div>
-                    {(!logs || !logs.length) && startButton}
-                    {logs && logs[0]?.end && startButton}
-                    {logs && logs[0]?.start && !logs[0]?.end && endButton}
-                </div>
-                <h4>previous logs</h4>
+                {(!logs || !logs.length) && startButton}
+                {logs && logs[0]?.end && startButton}
+                {logs && logs[0]?.start && !logs[0]?.end && endButton}
+            </div>
+            <h3>Bisher erfasste Zeiten</h3>
+            <div className="times-table">
                 <table>
                     <thead>
                         <tr>
-                            <td>Index</td>
-                            <td>Start</td>
-                            <td>End</td>
-                            <td>Funktionen</td>
+                            <th></th>
+                            <th>Start</th>
+                            <th>End</th>
+                            <th>Funktionen</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +97,7 @@ export default function Edit(props) {
                             logs.map((log, i) => {
                                 return (
                                     <tr key={i}>
-                                        <td>{i}</td>
+                                        <td>{i + 1})</td>
                                         <td>
                                             {!lineEdit[i] &&
                                                 format(
