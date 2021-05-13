@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import "./App.css";
+import Users from "./Users";
+import { useState } from "react";
+import InnerFrame from "./InnerFrame";
+import Edit from "./Edit";
+import Summary from "./Summary";
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [name, setName] = useState("");
+
+    const withUserNavigation = (
+        <div>
+            Current User: {name}{" "}
+            <div
+                onClick={() => {
+                    setName(false);
+                }}
+            >
+                Change User
+            </div>
+        </div>
+    );
+
+    return (
+        <div>
+            {!name && <Users selectName={setName} />}
+            {name && withUserNavigation}
+            {name && (
+                <InnerFrame>
+                    <Summary label="view Statistics" user={name} />
+                    <Edit label="edit / new" user={name} />
+                </InnerFrame>
+            )}
+        </div>
+    );
 }
 
 export default App;
