@@ -2,8 +2,7 @@ import Users from "./Users";
 import { useState } from "react";
 import InnerFrame from "./InnerFrame";
 import Edit from "./Edit";
-import Monthly from "./Monthly";
-import Daily from "./Daily";
+import Summary from "./Summary";
 
 function App() {
     const [name, setName] = useState("");
@@ -30,8 +29,16 @@ function App() {
             {name && (
                 <InnerFrame>
                     <Edit label="Zeiten hinzufügen / bearbeiten" user={name} />
-                    <Daily label="Arbeitszeiten pro Tag" user={name} />
-                    <Monthly label="Arbeitszeiten pro Monat" user={name} />
+                    <Summary
+                        label="Arbeitszeiten pro Tag"
+                        user={name}
+                        mode="daily"
+                    />
+                    <Summary
+                        label="Arbeitszeiten pro Monat"
+                        user={name}
+                        mode="monthly"
+                    />
                 </InnerFrame>
             )}
         </div>

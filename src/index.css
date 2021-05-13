@@ -11,6 +11,7 @@ body {
     width: 100vw;
     height: 100vh;
     margin: 0;
+    background-color: tomato;
 }
 
 .App {
@@ -22,6 +23,8 @@ body {
     justify-content: flex-start;
     align-items: center;
     overflow: hidden;
+    background-color: #fff;
+    border-radius: 15px;
 }
 
 .title {
