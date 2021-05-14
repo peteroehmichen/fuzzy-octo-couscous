@@ -1,7 +1,8 @@
-import { Fragment, useEffect, useState } from "react";
-import { format } from "date-fns";
+import { useEffect, useState } from "react";
+import DateInTable from "./DateInTable";
+import EditTimesButton from "./EditTimesButton";
 
-export default function Edit(props) {
+export default function Edit({ user }) {
     const [logs, setLogs] = useState();
     const [lineEdit, setLineEdit] = useState({});
     const [lineDelete, setLineDelete] = useState({});
@@ -11,23 +12,56 @@ export default function Edit(props) {
 
     useEffect(() => {
         try {
-            setLogs(JSON.parse(localStorage.getItem("timeLogs"))[props.user]);
+            setLogs(JSON.parse(localStorage.getItem("timeLogs"))[user]);
         } catch (error) {
             console.log("could not read LS:", error.message);
         }
-    }, [props.user]);
+    }, [user]);
 
     useEffect(() => {
         try {
             const prevStorage = JSON.parse(localStorage.getItem("timeLogs"));
-            prevStorage[props.user] = logs;
+            prevStorage[user] = logs;
             localStorage.setItem("timeLogs", JSON.stringify(prevStorage));
         } catch (error) {
             console.log("could not access LS:", error.message);
         }
-    }, [props.user, logs]);
+    }, [user, logs]);
 
     const noData = <p>No previous entries found</p>;
+
+    function toggleBlocks(index, purpose) {
+        return function (action) {
+            setBlockOtherEdits(!blockOtherEdits);
+
+            if (purpose === "edit") {
+                setLineEdit({
+                    ...lineEdit,
+                    [index]: !lineEdit[index],
+                });
+            }
+
+            if (purpose === "delete") {
+                setLineDelete({
+                    ...lineDelete,
+                    [index]: !lineDelete[index],
+                });
+            }
+
+            if (action === "cancel") {
+                setUpdatedEnd();
+                setUpdatedStart();
+            }
+
+            if (action === "confirm") {
+                if (purpose === "edit") {
+                    editLog(index);
+                } else if (purpose === "delete") {
+                    deleteEntry(index);
+                }
+            }
+        };
+    }
 
     function logStart() {
         const newLogs = logs ? [...logs] : [];
@@ -99,151 +133,40 @@ export default function Edit(props) {
                                     <tr key={i}>
                                         <td>{i + 1})</td>
                                         <td>
-                                            {!lineEdit[i] &&
-                                                format(
-                                                    log.start,
-                                                    "dd.MM.yyyy', um 'HH:mm' Uhr'"
+                                            <DateInTable
+                                                editMode={lineEdit[i]}
+                                                loggedTime={log.start}
+                                                editedTime={setUpdatedStart}
+                                            />
+                                        </td>
+                                        <td>
+                                            <DateInTable
+                                                editMode={lineEdit[i]}
+                                                loggedTime={log.end}
+                                                editedTime={setUpdatedEnd}
+                                            />
+                                        </td>
+                                        <td>
+                                            <EditTimesButton
+                                                purpose="edit"
+                                                toggleBlocks={toggleBlocks(
+                                                    i,
+                                                    "edit"
                                                 )}
-                                            {lineEdit[i] && (
-                                                <input
-                                                    type="datetime-local"
-                                                    name="start"
-                                                    value={format(
-                                                        log.start,
-                                                        "yyy-MM-dd'T'HH:mm"
-                                                    )}
-                                                    onChange={(e) => {
-                                                        setUpdatedStart(
-                                                            e.target.value
-                                                        );
-                                                    }}
-                                                />
-                                            )}
+                                                editMode={lineEdit[i]}
+                                                disabled={blockOtherEdits}
+                                            />
                                         </td>
                                         <td>
-                                            {!lineEdit[i] &&
-                                                log.end &&
-                                                format(
-                                                    log.end,
-                                                    "dd.MM.yyyy', um 'HH:mm' Uhr'"
+                                            <EditTimesButton
+                                                purpose="delete"
+                                                toggleBlocks={toggleBlocks(
+                                                    i,
+                                                    "delete"
                                                 )}
-                                            {lineEdit[i] && log.end && (
-                                                <input
-                                                    type="datetime-local"
-                                                    name="start"
-                                                    value={format(
-                                                        log.end,
-                                                        "yyy-MM-dd'T'HH:mm"
-                                                    )}
-                                                    onChange={(e) => {
-                                                        setUpdatedEnd(
-                                                            e.target.value
-                                                        );
-                                                    }}
-                                                />
-                                            )}
-                                        </td>
-                                        <td>
-                                            {!lineEdit[i] && (
-                                                <button
-                                                    disabled={blockOtherEdits}
-                                                    onClick={() => {
-                                                        setLineEdit({
-                                                            ...lineEdit,
-                                                            [i]: true,
-                                                        });
-                                                        setBlockOtherEdits(
-                                                            true
-                                                        );
-                                                    }}
-                                                >
-                                                    Bearbeiten
-                                                </button>
-                                            )}
-                                            {lineEdit[i] && (
-                                                <Fragment>
-                                                    <button
-                                                        onClick={() => {
-                                                            setLineEdit({
-                                                                ...lineEdit,
-                                                                [i]: false,
-                                                            });
-                                                            setBlockOtherEdits(
-                                                                false
-                                                            );
-                                                            setUpdatedEnd();
-                                                            setUpdatedStart();
-                                                        }}
-                                                    >
-                                                        {" "}
-                                                        Abbrechen
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            setBlockOtherEdits(
-                                                                false
-                                                            );
-                                                            setLineEdit({
-                                                                ...lineEdit,
-                                                                [i]: false,
-                                                            });
-                                                            editLog(i);
-                                                        }}
-                                                    >
-                                                        Speichern
-                                                    </button>
-                                                </Fragment>
-                                            )}
-                                        </td>
-                                        <td>
-                                            {!lineDelete[i] && (
-                                                <button
-                                                    disabled={blockOtherEdits}
-                                                    onClick={() => {
-                                                        setLineDelete({
-                                                            ...lineDelete,
-                                                            [i]: true,
-                                                        });
-                                                        setBlockOtherEdits(
-                                                            true
-                                                        );
-                                                    }}
-                                                >
-                                                    Löschen
-                                                </button>
-                                            )}
-                                            {lineDelete[i] && (
-                                                <Fragment>
-                                                    <button
-                                                        onClick={() => {
-                                                            setLineDelete({
-                                                                ...lineDelete,
-                                                                [i]: false,
-                                                            });
-                                                            setBlockOtherEdits(
-                                                                false
-                                                            );
-                                                        }}
-                                                    >
-                                                        Abbrechen
-                                                    </button>
-                                                    <button
-                                                        onClick={() => {
-                                                            // TODO edit and save!
-                                                            setBlockOtherEdits(
-                                                                false
-                                                            );
-                                                            setLineDelete({
-                                                                ...lineDelete,
-                                                                [i]: false,
-                                                            });
-                                                            deleteEntry(i);
-                                                        }}
-                                                    >
-                                                        Löschen
-                                                    </button>
-                                                </Fragment>
-                                            )}
+                                                editMode={lineDelete[i]}
+                                                disabled={blockOtherEdits}
+                                            />
                                         </td>
                                     </tr>
                                 );
@@ -255,5 +178,3 @@ export default function Edit(props) {
         </div>
     );
 }
-
-// TODO (1) Erstellen Sie ein Formular zum Erfassen von Arbeitszeiten. Das kann entweder als „Start / Stopp“-Knopf zum Tracken eines Logs oder über ein Formular mit Start-Zeit und End-Zeit geschehen.

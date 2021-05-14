@@ -1,6 +1,4 @@
 import { useEffect, useState } from "react";
-import { format, differenceInHours, parse } from "date-fns";
-
 import {
     BarChart,
     Bar,
@@ -11,6 +9,7 @@ import {
     Legend,
     ResponsiveContainer,
 } from "recharts";
+import analyseTimes from "./helpers/analyseTimes";
 
 export default function Summary(props) {
     const [logs, setLogs] = useState();
@@ -23,28 +22,7 @@ export default function Summary(props) {
         }
     }, [props.user]);
 
-    const formatDefinition = props.mode === "daily" ? "dd.MM.yyyy" : "MM/yyyy";
-    const tempData = {};
-    const finalData = [];
-    if (logs) {
-        logs.forEach((entry) => {
-            let temp = format(entry.end, formatDefinition);
-            if (tempData[temp]) {
-                tempData[temp] += differenceInHours(entry.end, entry.start);
-            } else {
-                tempData[temp] = differenceInHours(entry.end, entry.start);
-            }
-        });
-        for (const element of Object.keys(tempData)) {
-            finalData.push({ name: element, hours: tempData[element] });
-        }
-        finalData.sort((a, b) => {
-            return (
-                parse(b.name, formatDefinition, new Date()) -
-                parse(a.name, formatDefinition, new Date())
-            );
-        });
-    }
+    const chartData = analyseTimes(logs, props.mode);
 
     return (
         <div className="sections">
@@ -52,7 +30,7 @@ export default function Summary(props) {
                 <BarChart
                     width={500}
                     height={300}
-                    data={finalData}
+                    data={chartData}
                     margin={{
                         top: 5,
                         right: 30,

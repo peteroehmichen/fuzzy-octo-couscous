@@ -30,11 +30,11 @@ export default function Users(props) {
     return (
         <Fragment>
             <div className="title">
-                <h1>Zeiterfassung</h1>
+                <h1 data-testid="title">Zeiterfassung</h1>
                 <h3>Bitte wähle einen Nutzer</h3>
             </div>
             <div className="user-body">
-                <p>Bestehende Nutzer</p>
+                <p>Bestehenden Nutzer auswählen:</p>
                 <select
                     id="existing"
                     defaultValue="choose"
@@ -54,16 +54,22 @@ export default function Users(props) {
                             );
                         })}
                 </select>
-                <p>oder erstelle einen neuen Nutzer</p>
+                <p>
+                    Manuelle Eingabe oder neuen Nutzer erstellen
+                    <br />
+                    <i>(Keine Dopplungen erlaubt)</i>
+                </p>
                 <input
                     type="text"
                     name="newUser"
-                    placeholder="Dein Name"
+                    placeholder="Name"
                     onChange={(e) => {
                         setName(e.target.value);
                     }}
                 />
-                <button onClick={confirmName}>Submit</button>
+                <button onClick={confirmName} disabled={!name}>
+                    Submit
+                </button>
             </div>
         </Fragment>
     );
